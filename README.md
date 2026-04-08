@@ -64,3 +64,8 @@ For a stable production deployment on Vercel:
 - **Anti-Abuse**: IP-based rate limiting prevents automated scraping and protects Apify credits.
 - **Error Sanitization**: Stack traces are logged server-side but never exposed to the client.
 
+## 🗺️ Roadmap (Future Enhancements)
+
+- [ ] **Persistent State**: Switch from in-memory maps to Vercel KV (Redis) for cross-instance caching and reliable rate limiting.
+- [ ] **AI Optimization**: Add an "AI Polish" button to enhance experience descriptions using LLMs.
+- [ ] **Enhanced Customization**: Allow users to customize fields in each section (descriptions, titles, dates, etc.).
