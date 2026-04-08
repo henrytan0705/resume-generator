@@ -1,12 +1,14 @@
+import { LinkedInProfile } from "@/types/profile";
+
 interface CacheEntry {
-  data: any;
+  data: LinkedInProfile;
   expiresAt: number;
 }
 const scrapeCache = new Map<string, CacheEntry>();
 const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 Hour global memory cache limits
 const MAX_CACHE_SIZE = 100; // Hard bounded map tracking preventing unbounded OOM memory faults organically!
 
-export function getCachedProfile(url: string) {
+export function getCachedProfile(url: string): LinkedInProfile | null {
   if (scrapeCache.has(url)) {
     const cached = scrapeCache.get(url)!;
     if (Date.now() < cached.expiresAt) {
@@ -18,7 +20,7 @@ export function getCachedProfile(url: string) {
   return null;
 }
 
-export function setCachedProfile(url: string, data: any) {
+export function setCachedProfile(url: string, data: LinkedInProfile) {
   if (scrapeCache.size >= MAX_CACHE_SIZE) {
     const firstKey = scrapeCache.keys().next().value;
     if (firstKey) scrapeCache.delete(firstKey);

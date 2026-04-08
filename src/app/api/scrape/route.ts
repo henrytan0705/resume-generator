@@ -3,7 +3,8 @@ import { z } from 'zod';
 import axios from 'axios';
 import { mockProfile } from '@/lib/mock-data';
 import { getCachedProfile, setCachedProfile } from '@/lib/cache';
-import { parseApifyProfile } from '@/lib/apify-parser';
+import { parseApifyProfile, ApifyRawProfile } from '@/lib/apify-parser';
+import { LinkedInProfile } from '@/types/profile';
 
 const RequestSchema = z.object({
   url: z.string().url().startsWith('https://www.linkedin.com/in/', { 
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Apify API Key missing. Please set APIFY_API_TOKEN in .env.local' }, { status: 500 });
     }
 
-    let person: any = null;
+    let person: ApifyRawProfile | null = null;
 
     try {
       // Execute REST proxy seamlessly trapping failures 
@@ -94,11 +95,12 @@ export async function POST(req: Request) {
       profilePictureBase64
     };
     
-    setCachedProfile(url, finalData);
+    setCachedProfile(url, finalData as LinkedInProfile);
 
     return NextResponse.json(finalData);
-  } catch (error: any) {
-    console.error('Apify Scrape Error:', error?.stack || error?.message || error);
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.stack || error.message : String(error);
+    console.error('Apify Scrape Error:', errorMsg);
     return NextResponse.json({ error: 'An internal server error occurred. Please try again later.' }, { status: 500 });
   }
 }

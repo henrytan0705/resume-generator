@@ -9,16 +9,15 @@ export function parseApifyProfile(person: ApifyRawProfile): Omit<LinkedInProfile
   const name = person.name || person.fullName || `${person.firstName || ''} ${person.lastName || ''}`.trim() || 'Extracted Name';
   const headline = person.headline || person.jobTitle || 'LinkedIn Profile';
 
-  const currentYear = new Date().getFullYear();
   const rawExperiences = person.experiences || person.experience || person.positions || person.employment_history || [];
   
-  const cleanExperiences: Experience[] = rawExperiences.filter((work: any) => {
+  const cleanExperiences: Experience[] = rawExperiences.filter((work: ApifyRawProfile) => {
     const lowerTitle = (work.title || work.name || work.position || '').toLowerCase();
     if (lowerTitle.includes('career break') || lowerTitle.includes('sabbatical') || lowerTitle.includes('gap')) {
       return false;
     }
     return true;
-  }).map((work: any, index: number) => {
+  }).map((work: ApifyRawProfile, index: number) => {
     const expDescription = work.description || work.summary || undefined;
     const expTitle = work.title || work.position || work.name || '';
     const expCompany = work.companyName || work.company || work.organization_name || '';
@@ -46,7 +45,7 @@ export function parseApifyProfile(person: ApifyRawProfile): Omit<LinkedInProfile
   });
 
   const rawEducations = person.educations || person.education || person.educational_history || [];
-  const educations: Education[] = rawEducations.map((edu: any, i: number) => {
+  const educations: Education[] = rawEducations.map((edu: ApifyRawProfile, i: number) => {
     let eduStartRaw = edu.startDate?.text || edu.startDate?.year || edu.startDate || edu.startYear || (edu.dateRange && edu.dateRange.split('-')[0]) || '';
     let eduEndRaw = edu.endDate?.text || edu.endDate?.year || edu.endDate || edu.endYear || (edu.dateRange && edu.dateRange.split('-')[1]) || 'Present';
     
@@ -73,14 +72,14 @@ export function parseApifyProfile(person: ApifyRawProfile): Omit<LinkedInProfile
     })).filter((s: Skill) => s.name.length > 0);
   } else {
     const rawSkills = person.skills || [];
-    skills = rawSkills.map((s: any, i: number) => ({
+    skills = rawSkills.map((s: ApifyRawProfile, i: number) => ({
       id: `apify-skill-${i}`,
       name: s.name || ''
     })).slice(0, 15);
   }
 
   const rawCerts = person.certifications || [];
-  const certifications: Certification[] = rawCerts.map((c: any, i: number) => ({
+  const certifications: Certification[] = rawCerts.map((c: ApifyRawProfile, i: number) => ({
     id: `apify-cert-${i}`,
     name: c.name || c.title || '',
     authority: c.authority || c.issuedBy || '',
@@ -89,7 +88,7 @@ export function parseApifyProfile(person: ApifyRawProfile): Omit<LinkedInProfile
   }));
 
   const rawProjects = person.projects || [];
-  const projects: Project[] = rawProjects.map((p: any, i: number) => ({
+  const projects: Project[] = rawProjects.map((p: ApifyRawProfile, i: number) => ({
     id: `apify-proj-${i}`,
     title: p.title || '',
     description: p.description || '',
