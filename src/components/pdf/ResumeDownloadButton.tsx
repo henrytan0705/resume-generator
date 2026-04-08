@@ -27,9 +27,7 @@ export default function ResumeDownloadButton({ profile, layoutOrder }: Props) {
       fileName="resume.pdf"
       className="inline-flex h-12 w-full items-center justify-center rounded-md bg-blue-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-600 sm:w-auto mt-4"
     >
-      {({ loading }) => (
-        loading ? "Generating PDF Buffer..." : "Download Final Resume"
-      )}
+    Download Final Resume
     </PDFDownloadLink>
   );
 }

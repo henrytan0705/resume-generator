@@ -41,9 +41,12 @@ export async function POST(req: Request) {
 
     try {
       // Execute REST proxy seamlessly trapping failures 
-      const apifyUrl = `https://api.apify.com/v2/acts/harvestapi~linkedin-profile-scraper/run-sync-get-dataset-items?token=${process.env.APIFY_API_TOKEN}`;
+      const apifyUrl = `https://api.apify.com/v2/acts/harvestapi~linkedin-profile-scraper/run-sync-get-dataset-items`;
       const response = await axios.post(apifyUrl, { urls: [url] }, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.APIFY_API_TOKEN}`,
+        }
       });
       
       const items = response.data;
@@ -95,7 +98,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(finalData);
   } catch (error: any) {
-    console.error('Apify Scrape Error:', error?.message || error);
-    return NextResponse.json({ error: `Internal execution error: ${error?.stack || error?.message}` }, { status: 500 });
+    console.error('Apify Scrape Error:', error?.stack || error?.message || error);
+    return NextResponse.json({ error: 'An internal server error occurred. Please try again later.' }, { status: 500 });
   }
 }
