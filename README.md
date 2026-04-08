@@ -44,6 +44,12 @@ npm run build
 npm start
 ```
 
+### 6. Vercel Deployment 🚀
+For a stable production deployment on Vercel:
+- **Environment Variables**: Set `APIFY_API_TOKEN` and `USE_MOCK_DATA` in the Vercel Dashboard.
+- **Function Timeout**: Go to **Settings > Functions** and set the **Max Duration** to **30s**. The default 10s timeout is insufficient for the Apify scraper to complete.
+- **Memory**: The default is usually sufficient, but **256MB** is recommended if processing profile pictures with large resolutions.
+
 ## 🏗️ Architecture
 
 - **`/app/api/scrape`**: API Route handler for validation, caching, and orchestration.
