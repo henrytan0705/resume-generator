@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,23 +10,15 @@ export interface SectionItem {
 }
 
 interface SectionManagerProps {
-  initialSections: SectionItem[];
+  sections: SectionItem[];
   onOrderChange: (sections: SectionItem[]) => void;
 }
 
-export function SectionManager({ initialSections, onOrderChange }: SectionManagerProps) {
-  const [sections, setSections] = useState<SectionItem[]>(initialSections);
-
-  // Sync upstream mutations if parent natively manipulates the initial array
-  useEffect(() => {
-    setSections(initialSections);
-  }, [initialSections]);
-
+export function SectionManager({ sections, onOrderChange }: SectionManagerProps) {
   const moveUp = (index: number) => {
     if (index === 0) return;
     const newSections = [...sections];
     [newSections[index - 1], newSections[index]] = [newSections[index], newSections[index - 1]];
-    setSections(newSections);
     onOrderChange(newSections);
   };
 
@@ -32,7 +26,6 @@ export function SectionManager({ initialSections, onOrderChange }: SectionManage
     if (index === sections.length - 1) return;
     const newSections = [...sections];
     [newSections[index + 1], newSections[index]] = [newSections[index], newSections[index + 1]];
-    setSections(newSections);
     onOrderChange(newSections);
   };
 

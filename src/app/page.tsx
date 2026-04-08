@@ -115,7 +115,6 @@ export default function Home() {
         {status === 'SUCCESS' && profile && (
           <DataPreview 
             profile={profile} 
-            onProfileUpdate={(cleanData) => setProfile(cleanData)}
             onReset={() => {
               setStatus('IDLE');
               setUrl('');

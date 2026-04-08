@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Trash2, RotateCcw, ToggleLeft, ToggleRight, LucideIcon } from 'lucide-react';
 
@@ -10,7 +12,7 @@ export interface CuratableSectionProps<T> {
   onToggleSection?: () => void;
   // Item-level soft deletes
   optedOutIds: Set<string>;
-  onToggleItem: (id: string, store: Set<string>) => void;
+  onToggleItem: (id: string) => void;
   
   // Render Mappings
   getId: (item: T) => string | undefined;
@@ -101,7 +103,7 @@ export function CuratableSection<T>({
               
               <button 
                 type="button"
-                onClick={() => id && onToggleItem(id, optedOutIds)}
+                onClick={() => id && onToggleItem(id)}
                 aria-label={isOptedOut ? `Restore ${title} entry` : `Remove ${title} entry`}
                 className={`p-2 rounded-lg transition-colors ms-4 flex-shrink-0 ${
                   isOptedOut ? 'text-blue-500 bg-blue-50 hover:bg-blue-100' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'

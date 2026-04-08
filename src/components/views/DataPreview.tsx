@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { UserCircle2, CheckCircle2, Briefcase, GraduationCap, Trash2, RotateCcw, FolderGit2, Award, Zap, ToggleLeft, ToggleRight } from 'lucide-react';
+import { UserCircle2, CheckCircle2, Briefcase, GraduationCap, RotateCcw, FolderGit2, Award, Zap, ToggleLeft, ToggleRight } from 'lucide-react';
 import { LinkedInProfile, Experience, Education, Project, Certification } from '@/types/profile';
 import { CuratableSection } from './CuratableSection';
 import { SectionManager, SectionItem } from './SectionManager';
@@ -23,7 +23,6 @@ const ResumeDownloadButton = dynamic(
 interface DataPreviewProps {
   profile: LinkedInProfile;
   onReset: () => void;
-  onProfileUpdate: (profile: LinkedInProfile) => void;
 }
 
 const DEFAULT_LAYOUT: SectionItem[] = [
@@ -34,7 +33,7 @@ const DEFAULT_LAYOUT: SectionItem[] = [
   { id: 'skills', label: 'Skills' }
 ];
 
-export function DataPreview({ profile, onReset, onProfileUpdate }: DataPreviewProps) {
+export function DataPreview({ profile, onReset }: DataPreviewProps) {
   // Compute exactly which sections have data to hide empty ones from the reorderer
   const getInitialLayout = () => {
     return DEFAULT_LAYOUT.filter(section => {
@@ -110,7 +109,7 @@ export function DataPreview({ profile, onReset, onProfileUpdate }: DataPreviewPr
 
       {/* Render the Master Reorder UI mapped cleanly */}
       <SectionManager 
-        initialSections={layoutOrder} 
+        sections={layoutOrder} 
         onOrderChange={setLayoutOrder} 
       />
 

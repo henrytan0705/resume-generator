@@ -70,7 +70,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ profile, layoutOrder })
                             </Text>
                           )}
                         </View>
-                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <View style={styles.entryHeader}>
                           <Text style={styles.entryCompany}>{exp.company}</Text>
                           {exp.location && <Text style={styles.entryLocation}>{exp.location}</Text>}
                         </View>

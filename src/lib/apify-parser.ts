@@ -10,7 +10,7 @@ export async function parseApifyProfile(person: ApifyRawProfile): Promise<Omit<L
   const name = person.name || person.fullName || `${person.firstName || ''} ${person.lastName || ''}`.trim() || 'Extracted Name';
   const headline = person.headline || person.jobTitle || 'LinkedIn Profile';
 
-  // --- Profile Picture Extraction (Audit #5: SoC) ---
+  // --- Profile Picture Extraction ---
   let profilePictureBase64: string | undefined = undefined;
   const rawPic = person.profilePictureUrl || person.profilePicUrl || person.profilePicture || person.profile_pic_url || person.photoUrl;
   
