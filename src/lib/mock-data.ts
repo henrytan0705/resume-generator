@@ -4,8 +4,6 @@ export const mockProfile: LinkedInProfile = {
   id: "profile-123",
   name: "Alex Doe",
   headline: "Senior Full Stack Engineer | Next.js & React Expert",
-  summary:
-    "An experienced software engineer with a strong background in architecting large-scale React and Next.js applications. Passionate about performant web architectures and building scalable technical solutions.",
   profilePictureBase64:
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADeSURBVGhD7c8xAQAgDAAx/C/tATawhwQn12T1v+7Z7rP/wAARgAEiAANEAAaIAAwQARggAjBABCABIiACIoAAiIAIiAACIAIiIAIgwAIiYAEIsIAIWAACLCACOYAAcoAAcoAASoAAKkAACkAADkAAAQAAASAAAQGAABCAhABAQgEBAAQgIYAAEIACAigAAigAARwAAQkAAREAAA0gAEUAAU4AAUYAASkAAQEAASEAAQEAAZcAAXkAAVkAAT0AAXEAARcAAUwAAQwAASAABIgADBAxGAAzEAAyAAAyoPfr/kQ0yqJv3+UAAAAASUVORK5CYII=",
   experiences: [

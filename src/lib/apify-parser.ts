@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { LinkedInProfile, Experience, Education, Skill, Certification, Project } from '@/types/profile';
 
 // Optional strict generic payload matching defining structural layouts
@@ -5,9 +6,34 @@ export interface ApifyRawProfile {
   [key: string]: any;
 }
 
-export function parseApifyProfile(person: ApifyRawProfile): Omit<LinkedInProfile, 'id' | 'profilePictureBase64'> {
+export async function parseApifyProfile(person: ApifyRawProfile): Promise<Omit<LinkedInProfile, 'id' | 'profilePictureBase64'> & { profilePictureBase64?: string }> {
   const name = person.name || person.fullName || `${person.firstName || ''} ${person.lastName || ''}`.trim() || 'Extracted Name';
   const headline = person.headline || person.jobTitle || 'LinkedIn Profile';
+
+  // --- Profile Picture Extraction (Audit #5: SoC) ---
+  let profilePictureBase64: string | undefined = undefined;
+  const rawPic = person.profilePictureUrl || person.profilePicUrl || person.profilePicture || person.profile_pic_url || person.photoUrl;
+  
+  let profilePicUrl: string | undefined = undefined;
+  if (typeof rawPic === 'string') profilePicUrl = rawPic;
+  else if (rawPic && typeof rawPic === 'object' && typeof rawPic.url === 'string') profilePicUrl = rawPic.url;
+
+  if (profilePicUrl && profilePicUrl.startsWith('https://')) {
+    let retries = 2;
+    while (retries >= 0) {
+      try {
+        const picRes = await axios.get(profilePicUrl, { responseType: 'arraybuffer', timeout: 5000 });
+        const mimeType = picRes.headers['content-type'] || 'image/jpeg';
+        profilePictureBase64 = `data:${mimeType};base64,${Buffer.from(picRes.data).toString('base64')}`;
+        break;
+      } catch (err: any) {
+        retries--;
+        if (retries < 0) {
+          console.warn('Silent skip: Failed to fetch profile picture safely.', err.message);
+        }
+      }
+    }
+  }
 
   const rawExperiences = person.experiences || person.experience || person.positions || person.employment_history || [];
   
@@ -96,5 +122,5 @@ export function parseApifyProfile(person: ApifyRawProfile): Omit<LinkedInProfile
     endDate: p.endDate?.year ? `${p.endDate.year}` : ''
   }));
 
-  return { name, headline, experiences: cleanExperiences, educations, skills, certifications, projects };
+  return { name, headline, profilePictureBase64, experiences: cleanExperiences, educations, skills, certifications, projects };
 }

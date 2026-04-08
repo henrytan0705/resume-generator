@@ -62,37 +62,11 @@ export async function POST(req: Request) {
     }
 
     // Execute standard parsing utilizing the isolated map engine (SoC inherently achieved) natively!
-    const parsedData = parseApifyProfile(person);
-
-    let profilePictureBase64: string | undefined = undefined;
-    const rawPic = person.profilePictureUrl || person.profilePicUrl || person.profilePicture || person.profile_pic_url || person.photoUrl;
-    
-    let profilePicUrl: string | undefined = undefined;
-    if (typeof rawPic === 'string') profilePicUrl = rawPic;
-    else if (rawPic && typeof rawPic === 'object' && typeof rawPic.url === 'string') profilePicUrl = rawPic.url;
-
-    if (profilePicUrl && profilePicUrl.startsWith('https://')) {
-      // Retry block logic for the profile picture extraction resolving arbitrary networking faults organically over 2 loops natively!
-      let retries = 2;
-      while (retries >= 0) {
-        try {
-          const picRes = await axios.get(profilePicUrl, { responseType: 'arraybuffer', timeout: 5000 });
-          const mimeType = picRes.headers['content-type'] || 'image/jpeg';
-          profilePictureBase64 = `data:${mimeType};base64,${Buffer.from(picRes.data).toString('base64')}`;
-          break; // Fetch success cleanly traps and ends the retry loop seamlessly!
-        } catch (err: any) {
-          retries--;
-          if (retries < 0) {
-            console.warn('Silent skip: Failed to fetch the profile picture safely avoiding build crashes natively.', err.message);
-          }
-        }
-      }
-    }
+    const parsedData = await parseApifyProfile(person);
 
     const finalData = { 
       id: `apify-record-${Date.now()}`,
       ...parsedData,
-      profilePictureBase64
     };
     
     setCachedProfile(url, finalData as LinkedInProfile);

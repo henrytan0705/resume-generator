@@ -42,7 +42,6 @@ export interface LinkedInProfile {
   id: string;
   name: string;
   headline: string;
-  summary?: string;
   profilePictureBase64?: string;
   experiences: Experience[];
   educations: Education[];

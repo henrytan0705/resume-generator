@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
   headline: { fontSize: 12, color: "#666666" },
   footer: { position: "absolute", fontSize: 10, bottom: 30, left: 40, right: 40, textAlign: "center", color: "#999999" },
   sectionTitle: { fontSize: 14, fontFamily: "Helvetica-Bold", textTransform: "uppercase", marginBottom: 6, marginTop: 8, borderBottomWidth: 0.5, borderBottomColor: "#cccccc", paddingBottom: 4 },
-  summary: { fontSize: 10, lineHeight: 1.5, marginBottom: 8 },
   entryItem: { marginBottom: 8 },
   entryHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginBottom: 3 },
   entryTitle: { fontSize: 11, fontFamily: "Helvetica-Bold" },
