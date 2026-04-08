@@ -1,64 +1,128 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { z } from "zod";
+import axios from "axios";
+import { FileText } from "lucide-react";
+
+import { LinkedInProfile } from "@/types/profile";
+import { mockProfile } from "@/lib/mock-data";
+
+// Extracted View Components
+import { DefaultView } from "@/components/views/DefaultView";
+import { ScrapingLoader } from "@/components/views/ScrapingLoader";
+import { ScrapingError } from "@/components/views/ScrapingError";
+import { DataPreview } from "@/components/views/DataPreview";
+
+const urlSchema = z.string().url().startsWith('https://www.linkedin.com/in/', 'Must be a valid LinkedIn profile URL starting with https://www.linkedin.com/in/');
+
+type AppStatus = 'IDLE' | 'SCRAPING' | 'SUCCESS' | 'ERROR';
 
 export default function Home() {
+  const [status, setStatus] = useState<AppStatus>('IDLE');
+  const [url, setUrl] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<LinkedInProfile | null>(null);
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setUrl(val);
+    if (!val) {
+      setValidationError(null);
+      return;
+    }
+    const result = urlSchema.safeParse(val);
+    if (!result.success) {
+      setValidationError(result.error.issues[0].message);
+    } else {
+      setValidationError(null);
+    }
+  };
+
+  const handleScrape = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = urlSchema.safeParse(url);
+    if (!result.success) {
+      setValidationError(result.error.issues[0].message);
+      return;
+    }
+
+    setStatus('SCRAPING');
+    setApiError(null);
+    setProfile(null);
+
+    try {
+      const res = await axios.post('/api/scrape', { url });
+      if (res.data?.error) {
+        throw new Error(JSON.stringify(res.data.error));
+      }
+      setProfile(res.data);
+      setStatus('SUCCESS');
+    } catch (err: any) {
+      console.error(err);
+      setApiError(err.response?.data?.error || err.message || 'Failed to scrape the profile.');
+      setStatus('ERROR');
+    }
+  };
+
+  const loadDemoData = () => {
+    setProfile(mockProfile);
+    setStatus('SUCCESS');
+    setApiError(null);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 font-sans">
+      <main className="mx-auto flex w-full max-w-4xl flex-col px-4 py-16 sm:px-6">
+        
+        {/* HEADER SECTION */}
+        <div className="text-center mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-full mb-6">
+            <FileText className="h-8 w-8 text-blue-700" />
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">
+            LinkedIn to <span className="text-blue-600">Resume</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+            Instantly convert any LinkedIn profile into a perfectly formatted, professional PDF resume.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* MODULAR STATUS VIEWS */}
+        {status === 'IDLE' && (
+          <DefaultView 
+            url={url} 
+            validationError={validationError} 
+            onUrlChange={handleUrlChange} 
+            onScrape={handleScrape} 
+            onLoadDemo={loadDemoData} 
+          />
+        )}
+
+        {status === 'SCRAPING' && (
+          <ScrapingLoader />
+        )}
+
+        {status === 'ERROR' && (
+          <ScrapingError 
+            apiError={apiError} 
+            onRetry={() => setStatus('IDLE')} 
+            onLoadDemo={loadDemoData} 
+          />
+        )}
+
+        {status === 'SUCCESS' && profile && (
+          <DataPreview 
+            profile={profile} 
+            onProfileUpdate={(cleanData) => setProfile(cleanData)}
+            onReset={() => {
+              setStatus('IDLE');
+              setUrl('');
+            }}
+          />
+        )}
+
       </main>
     </div>
   );
