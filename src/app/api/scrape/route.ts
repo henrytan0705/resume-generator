@@ -1,10 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 import axios from 'axios';
 import { mockProfile } from '@/lib/mock-data';
 import { getCachedProfile, setCachedProfile } from '@/lib/cache';
 import { parseApifyProfile, ApifyRawProfile } from '@/lib/apify-parser';
 import { LinkedInProfile } from '@/types/profile';
+import { isRateLimited } from '@/lib/rate-limit';
 
 const RequestSchema = z.object({
   url: z.string().url().startsWith('https://www.linkedin.com/in/', { 
@@ -12,7 +14,7 @@ const RequestSchema = z.object({
   }),
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const validationResult = RequestSchema.safeParse(body);
@@ -32,6 +34,26 @@ export async function POST(req: Request) {
     if (cached) {
       console.log(`[Cache Hit] Serving ${url} from 1-hour memory bounds.`);
       return NextResponse.json(cached);
+    }
+
+    // Rate Limiting based on IP address tracking
+    const headerList = await headers();
+    const ip = headerList.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
+    const limit = isRateLimited(ip);
+
+    if (limit.limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' }, 
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((limit.reset - Date.now()) / 1000).toString(),
+            'X-RateLimit-Limit': '5',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': limit.reset.toString()
+          }
+        }
+      );
     }
 
     if (!process.env.APIFY_API_TOKEN) {

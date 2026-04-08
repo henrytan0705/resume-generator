@@ -7,7 +7,8 @@ A professional, production-ready LinkedIn profile scraper and PDF resume generat
 - **LinkedIn Scraper API**: Secure orchestration with Apify to extract profile data.
 - **Smart Normalization**: Transforms raw scraper JSON into a strict, typed `LinkedInProfile` schema.
 - **Curatable UI**: Interactive preview allowing users to reorder sections, soft-delete entries, and toggle entire categories.
-- **High-Fidelity PDF**: Generates professional, ATS-friendly resumes with fixed headers/footers and smart page-break handling.
+- **High-Fidelity PDF**: Generates professional, ATS-friendly resumes with fixed headers/footers and smart page-break handling. Includes conditional description truncation (showing top 3 roles) to optimize readability.
+- **Anti-Abuse Protection**: Integrated IP-based rate limiting (10 requests / 15 mins) to prevent credit exhaustion.
 - **Resilient Caching**: In-memory TTL cache with bounded size to prevent memory leaks and minimize API costs.
 
 ## 🛠️ Setup
@@ -54,5 +55,6 @@ npm start
 - **Strict Zod Validation**: Validates all incoming URLs and payloads.
 - **Privacy-First**: No personal data is persisted beyond the 1-hour in-memory cache.
 - **Secure Headers**: Sensitive tokens are passed via Authorization headers.
+- **Anti-Abuse**: IP-based rate limiting prevents automated scraping and protects Apify credits.
 - **Error Sanitization**: Stack traces are logged server-side but never exposed to the client.
 
