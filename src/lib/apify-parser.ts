@@ -66,7 +66,7 @@ export async function parseApifyProfile(person: ApifyRawProfile): Promise<Omit<L
       location: expLocation,
       startDate: String(expStartRaw).trim().split('T')[0],
       endDate: String(expEndRaw) === 'Present' ? 'Present' : String(expEndRaw).trim().split('T')[0],
-      description: index > 2 ? undefined : expDescription
+      description: expDescription
     };
   });
 

@@ -58,7 +58,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ profile, layoutOrder })
               return (
                 <View key="exp">
                   <Text style={styles.sectionTitle}>Experience</Text>
-                  {profile.experiences.map((exp) => {
+                  {profile.experiences.map((exp, expIndex) => {
                     const hasDates = exp.startDate || (exp.endDate && exp.endDate !== 'Present');
                     return (
                       <View key={exp.id} style={styles.entryItem} wrap={false}>
@@ -74,7 +74,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ profile, layoutOrder })
                           <Text style={styles.entryCompany}>{exp.company}</Text>
                           {exp.location && <Text style={styles.entryLocation}>{exp.location}</Text>}
                         </View>
-                        {exp.description && <Text style={styles.entryDescription}>{exp.description}</Text>}
+                        {expIndex < 3 && exp.description && <Text style={styles.entryDescription}>{exp.description}</Text>}
                       </View>
                     );
                   })}
